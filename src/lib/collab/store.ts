@@ -225,7 +225,7 @@ function ensureSocket(
   if (socket) return socket;
 
   socket = io("https://vigilant-abundance-production-6403.up.railway.app", {
-    path: "/",
+    path: "/socket.io/",
     transports: ["websocket", "polling"],
     forceNew: true,
     reconnection: true,

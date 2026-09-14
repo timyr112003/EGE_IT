@@ -1,0 +1,15 @@
+[Unit]
+Description=Urok Python - сервис совместной работы (Socket.IO, порт 3003)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/urok/mini-services/collab-service
+ExecStart=/usr/local/bin/bun index.ts
+Restart=always
+RestartSec=3
+StandardOutput=append:/var/log/urok-collab.log
+StandardError=append:/var/log/urok-collab.err.log
+
+[Install]
+WantedBy=multi-user.target

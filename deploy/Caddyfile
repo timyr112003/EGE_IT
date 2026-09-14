@@ -1,0 +1,65 @@
+# ============================================================
+#  Caddyfile — обратный прокси для сайта-урока Python (ЕГЭ)
+# ============================================================
+#  Как это работает:
+#   - Весь обычный трафик идёт на сайт (Next.js, порт 3000)
+#   - Совместная работа (Socket.IO) помечена запросом
+#     ?XTransformPort=3003 — Caddy направляет такие запросы
+#     на сервис совместной работы (порт 3003)
+#
+#  ВАЖНО: не меняйте параметр XTransformPort — на него
+#  рассчитан код сайта.
+#
+#  Вариант А (по умолчанию): доступ по IP-адресу, порт 80.
+#  Работает сразу, домен не нужен:  http://IP-СЕРВЕРА/
+#
+#  Вариант Б: доступ по домену (рекомендуется, включит
+#  HTTPS автоматически). Раскомментируйте блок ниже,
+#  а блок «:80» закомментируйте.
+# ============================================================
+
+# ---------- ВАРИАНТ Б: домен с автоматическим HTTPS ----------
+# urok.example.ru {
+#     @transform_port {
+#         query XTransformPort=*
+#     }
+#     handle @transform_port {
+#         reverse_proxy localhost:{query.XTransformPort} {
+#             header_up Host {host}
+#             header_up X-Forwarded-For {remote_host}
+#             header_up X-Forwarded-Proto {scheme}
+#             header_up X-Real-IP {remote_host}
+#         }
+#     }
+#     handle {
+#         reverse_proxy localhost:3000 {
+#             header_up Host {host}
+#             header_up X-Forwarded-For {remote_host}
+#             header_up X-Forwarded-Proto {scheme}
+#             header_up X-Real-IP {remote_host}
+#         }
+#     }
+# }
+
+# ---------- ВАРИАНТ А: по IP-адресу (работает сразу) ----------
+:80 {
+    @transform_port {
+        query XTransformPort=*
+    }
+    handle @transform_port {
+        reverse_proxy localhost:{query.XTransformPort} {
+            header_up Host {host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Real-IP {remote_host}
+        }
+    }
+    handle {
+        reverse_proxy localhost:3000 {
+            header_up Host {host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Real-IP {remote_host}
+        }
+    }
+}

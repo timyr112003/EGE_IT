@@ -224,7 +224,7 @@ function ensureSocket(
   if (typeof window === "undefined") return null;
   if (socket) return socket;
 
-  socket = io("/?XTransformPort=3003", {
+  socket = io("https://vigilant-abundance-production-6403.up.railway.app", {
     path: "/",
     transports: ["websocket", "polling"],
     forceNew: true,

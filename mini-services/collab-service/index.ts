@@ -17,7 +17,7 @@ import { Server, type Socket } from "socket.io";
 import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
 
-const PORT = 3003;
+const PORT = Number(process.env.PORT) || 3003;
 const DATA_DIR = join(import.meta.dir, "..", "..", "data");
 const DATA_FILE = join(DATA_DIR, "collab.json");
 const MAX_CHAT = 100;
@@ -295,7 +295,7 @@ io.on("connection", (socket: Socket) => {
 /* ---------- Старт ---------- */
 
 loadState();
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, "0.0.0.0", () => {
   console.log(`[collab] websocket server running on port ${PORT}`);
 });
 

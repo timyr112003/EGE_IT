@@ -9,17 +9,17 @@ import {
 } from "lucide-react";
 import { SectionHeading, Callout } from "./sections";
 import { HomeworkWordButton } from "./homework-word-button";
-import { HOMEWORK_BLOCKS, type HomeworkBlock } from "@/lib/lesson/homework-data";
-
-const BLOCK_ICONS: React.ReactNode[] = [
-  <Home key="b1" className="h-4 w-4" />,
-  <Percent key="b2" className="h-4 w-4" />,
-  <BookOpenCheck key="b3" className="h-4 w-4" />,
-];
-
-const BLOCK_TONES = ["border-stone-300", "border-amber-400/70", "border-emerald-400/70"];
+import { HomeworkInteractive } from "./homework-interactive";
+import { HomeworkSubmitPanel } from "./homework-submit-panel";
+import {
+  HOMEWORK_BLOCKS,
+  HOMEWORK_ANSWERS_FILE_NAME,
+  type HomeworkBlock,
+} from "@/lib/lesson/homework-data";
 
 interface HomeworkProps {
+  /** Номер раздела в оглавлении урока (9 для урока 1, 10 для урока 2) */
+  num?: number;
   blocks?: HomeworkBlock[];
   /** Текст-подсказка в звонуте под блоками (для урока 2 — своя) */
   calloutTitle?: string;
@@ -32,19 +32,29 @@ interface HomeworkProps {
     fileName?: string;
     subtitle?: string;
   };
+  /** Номер урока для журнала сдачи */
+  lesson?: number;
+  /** Префикс реестра решений и ключей localStorage */
+  prefix?: string;
+  /** Имя файла docx с ответами ученика */
+  answersFileName?: string;
 }
 
 export function Homework({
+  num = 9,
   blocks = HOMEWORK_BLOCKS,
   calloutTitle = "Подсказки для задач с цифрами числа",
   calloutText,
-  lead = "Три блока по возрастанию сложности. Все задачи решаются материалом этого урока: print(), input(), int(), переменные и семь арифметических операций.",
+  lead = "Четыре блока по возрастанию сложности — 15 задач. Все задачи решаются материалом этого урока: print(), input(), int(), str(), переменные и арифметические операции. Решайте прямо здесь — редактор под каждой задачей.",
   wordProps,
+  lesson = 1,
+  prefix = "hw1",
+  answersFileName = HOMEWORK_ANSWERS_FILE_NAME,
 }: HomeworkProps) {
   return (
     <section className="scroll-mt-20" aria-label="Домашнее задание">
       <SectionHeading
-        num={8}
+        num={num}
         id="homework"
         title="Домашнее задание"
         lead={lead}
@@ -59,29 +69,15 @@ export function Homework({
         </p>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        {blocks.map((block, bi) => (
-          <div
-            key={bi}
-            className={`rounded-2xl border-2 bg-white p-5 shadow-sm ${BLOCK_TONES[bi]}`}
-          >
-            <h3 className="flex items-center gap-2 text-[15px] font-bold text-stone-900">
-              <span className="text-amber-600">{BLOCK_ICONS[bi]}</span>
-              {block.title}
-            </h3>
-            <ol className="mt-3 space-y-2.5">
-              {block.tasks.map((task, ti) => (
-                <li key={ti} className="flex items-start gap-2.5 text-[13.5px] leading-relaxed text-stone-700">
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-stone-100 font-mono text-[11px] font-bold text-stone-600 ring-1 ring-stone-200">
-                    {bi + 1}.{ti + 1}
-                  </span>
-                  {task}
-                </li>
-              ))}
-            </ol>
-          </div>
-        ))}
-      </div>
+      <HomeworkSubmitPanel
+        blocks={blocks}
+        lesson={lesson}
+        prefix={prefix}
+        answersFileName={answersFileName}
+        subtitle={wordProps?.subtitle ?? "Python — Урок 1 · Подготовка к ЕГЭ по информатике"}
+      />
+
+      <HomeworkInteractive blocks={blocks} prefix={prefix} />
 
       <div className="mt-5">
         <Callout icon={<Sparkles className="h-4 w-4" />} title={calloutTitle}>
@@ -91,8 +87,9 @@ export function Homework({
               и <code className="rounded bg-stone-200/70 px-1.5 py-0.5 font-mono text-[13px]">%</code> с числом 10:
               например, последняя цифра числа — это <code className="font-mono">n % 10</code>, а
               «отбросить» последнюю цифру можно через <code className="font-mono">n // 10</code>.
-              Трёхзначное число разбирается за два-три действия. Решайте в любой среде — или
-              вернитесь к редакторам этого урока.
+              В блоке 4 склеивайте строки через + и превращайте числа в строки через{" "}
+              <code className="font-mono">str()</code>. Трёхзначное число разбирается за два-три
+              действия. Решайте в любой среде — или прямо в редакторах выше.
             </p>
           )}
         </Callout>
@@ -108,6 +105,8 @@ const SKILLS = [
   { code: "x = 10", desc: "создавать переменные и менять их значения" },
   { code: "+ - * /", desc: "выполнять базовые арифметические действия" },
   { code: "// % **", desc: "целочисленное деление, остаток и степень" },
+  { code: "s1 + s2", desc: "склеивать строки и повторять их: s * n" },
+  { code: "str()", desc: "превращать число в строку для склейки с текстом" },
 ];
 
 interface ChecklistProps {
@@ -139,7 +138,7 @@ export function Checklist({
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        {SKILLS.map((s) => (
+        {skills.map((s) => (
           <div
             key={s.code}
             className="flex items-start gap-3 rounded-xl bg-white/5 p-4 ring-1 ring-white/10"

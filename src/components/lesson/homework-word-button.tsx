@@ -29,7 +29,7 @@ interface HomeworkWordButtonProps {
  * (Times New Roman, A4, поля 2/3 см) прямо в браузере.
  */
 
-function tr(
+export function tr(
   text: string,
   opts?: { bold?: boolean; italics?: boolean; size?: number; color?: string }
 ) {
@@ -43,7 +43,7 @@ function tr(
   });
 }
 
-function para(children: TextRun[], opts?: { center?: boolean; before?: number; after?: number }) {
+export function para(children: TextRun[], opts?: { center?: boolean; before?: number; after?: number }) {
   return new Paragraph({
     alignment: opts?.center ? AlignmentType.CENTER : AlignmentType.LEFT,
     spacing: { before: opts?.before ?? 0, after: opts?.after ?? 120, line: 276 },
@@ -82,7 +82,7 @@ export function HomeworkWordButton({
         );
         block.tasks.forEach((task, ti) => {
           children.push(
-            para([tr(`${bi + 1}.${ti + 1}. `, { bold: true }), tr(task, { bold: true })], {
+            para([tr(`${bi + 1}.${ti + 1}. `, { bold: true }), tr(task.text, { bold: true })], {
               before: 60,
               after: 40,
             })

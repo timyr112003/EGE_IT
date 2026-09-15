@@ -4,9 +4,9 @@ import { GraduationCap, Clock, Sparkles, Target, Play, Code2 } from "lucide-reac
 import { pyRunner } from "@/lib/py-runner/runner";
 
 const CHIPS = [
-  { icon: Clock, text: "90 минут" },
+  { icon: Clock, text: "≈ 100 минут" },
   { icon: GraduationCap, text: "Уровень: с нуля" },
-  { icon: Target, text: "print · input · переменные · арифметика" },
+  { icon: Target, text: "переменные · строки · str() · арифметика" },
 ];
 
 export function Hero() {
@@ -32,10 +32,10 @@ export function Hero() {
             — с нуля до первых программ
           </h1>
           <p className="mt-5 max-w-xl text-[15.5px] leading-relaxed text-stone-600">
-            Сегодня вы поймёте, как устроена программа, научитесь работать с переменными,
-            вводом и выводом — и уже на этом уроке решите первые задачи в стиле ЕГЭ.
-            Каждое задание можно выполнить прямо на этой странице: редактор кода
-            встроен в урок.
+            Сегодня вы поймёте, как компьютер выполняет программу, научитесь работать с
+            переменными, строками и вводом — и уже на этом уроке решите первые задачи в стиле
+            ЕГЭ. Каждое задание можно выполнить прямо на этой странице: редактор кода встроен
+            в урок.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-2">

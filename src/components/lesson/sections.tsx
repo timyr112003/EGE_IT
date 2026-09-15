@@ -4,13 +4,19 @@ import {
   AlertTriangle,
   Keyboard,
   ArrowRight,
+  Cpu,
+  ShieldCheck,
+  BookMarked,
+  Type,
 } from "lucide-react";
 import { CodeBlock } from "./code-block";
 import { PythonPlayground } from "./python-playground";
+import { TaskTabs } from "./task-tabs";
 import {
   ARITHMETIC_STARTER,
   VARIABLES_STARTER_1,
   VARIABLES_STARTER_2,
+  STRING_TASKS,
 } from "@/lib/lesson/tasks";
 
 /* ===== Вспомогательные блоки ===== */
@@ -150,6 +156,57 @@ print("Я готовлюсь к ЕГЭ")`}
             syncId="s1-intro"
           />
         </div>
+
+        {/* Как компьютер выполняет код: транслятор */}
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:p-6">
+          <h3 className="mb-1 flex items-center gap-2 text-[15.5px] font-bold text-stone-900">
+            <Cpu className="h-4 w-4 text-amber-500" />
+            Как компьютер выполняет Python-код
+          </h3>
+          <p className="text-[14px] leading-relaxed text-stone-600">
+            Компьютер понимает только машинный код — нули и единицы. Чтобы он выполнил
+            программу на Python, нужен <b>транслятор</b> — специальная программа-переводчик,
+            которая превращает ваш код в команды процессора. От того, <i>когда</i> происходит
+            перевод, зависит всё:
+          </p>
+          <div className="mt-4 overflow-x-auto thin-scroll">
+            <table className="w-full min-w-[520px] text-left text-[13.5px]">
+              <thead>
+                <tr className="border-b border-stone-200 bg-stone-50 text-[12px] uppercase tracking-wide text-stone-500">
+                  <th className="px-4 py-2.5 font-semibold"> </th>
+                  <th className="px-4 py-2.5 font-semibold">Компилятор</th>
+                  <th className="px-4 py-2.5 font-semibold">Интерпретатор</th>
+                </tr>
+              </thead>
+              <tbody className="text-stone-700">
+                <tr className="border-b border-stone-100">
+                  <td className="px-4 py-2.5 font-medium text-stone-800">Как работает</td>
+                  <td className="px-4 py-2.5">переводит всю программу сразу в готовый файл</td>
+                  <td className="px-4 py-2.5">читает и выполняет код <b>по строкам</b></td>
+                </tr>
+                <tr className="border-b border-stone-100">
+                  <td className="px-4 py-2.5 font-medium text-stone-800">Скорость</td>
+                  <td className="px-4 py-2.5">запуск готового файла — очень быстрый</td>
+                  <td className="px-4 py-2.5">каждый запуск — перевод заново</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-2.5 font-medium text-stone-800">Ошибки</td>
+                  <td className="px-4 py-2.5">покажет все сразу, до запуска</td>
+                  <td className="px-4 py-2.5">остановится на первой ошибке в своей строке</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <Callout icon={<Lightbulb className="h-4 w-4" />} title="Что важно запомнить">
+            <p>
+              Python — <b>интерпретируемый</b> язык: интерпретатор выполняет программу строка
+              за строкой, сверху вниз. Поэтому если ошибка прячется в десятой строке, первые
+              девять всё равно успеют выполниться — и только потом программа остановится. На
+              этой странице работает настоящий Python (CPython), собранный в WebAssembly:
+              тот же интерпретатор, просто внутри браузера.
+            </p>
+          </Callout>
+        </div>
       </div>
     </section>
   );
@@ -246,6 +303,26 @@ print(20 / 5)`}
           </p>
         </Callout>
 
+        {/* Приоритет операторов */}
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:p-6">
+          <h3 className="mb-1 text-[15.5px] font-bold text-stone-900">Порядок вычислений</h3>
+          <p className="mb-4 text-[14px] leading-relaxed text-stone-600">
+            В математике умножение старше сложения — в Python то же самое. Посмотрите на два
+            почти одинаковых print(): результат разный, потому что операции выполняются по
+            старшинству, а не слева направо.
+          </p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <CodeBlock code={"print(2 + 3 * 4)"} output={"14"} title="Сначала умножение" />
+            <CodeBlock code={"print((2 + 3) * 4)"} output={"20"} title="Скобки сильнее всех" />
+          </div>
+          <p className="mt-4 text-[14px] leading-relaxed text-stone-600">
+            Порядок от старших к младшим: <code className="rounded bg-amber-100 px-2 py-0.5 font-mono text-[13px] font-bold">**</code>{" "}
+            (степень) → <code className="rounded bg-amber-100 px-2 py-0.5 font-mono text-[13px] font-bold">* / // %</code>{" "}
+            → <code className="rounded bg-amber-100 px-2 py-0.5 font-mono text-[13px] font-bold">+ -</code>. Если сомневаетесь — ставьте скобки:
+            они не портят код, а делают его понятнее для человека.
+          </p>
+        </div>
+
         <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:p-6">
           <h3 className="mb-1 text-[15.5px] font-bold text-stone-900">Практика — 5 задач</h3>
           <p className="mb-4 text-[14px] leading-relaxed text-stone-600">
@@ -281,9 +358,9 @@ export function SectionThree() {
       <SectionHeading
         num={3}
         id="s3"
-        title="Переменные"
-        duration="15 минут"
-        lead="Переменная — это имя, под которым мы храним значение. Записываем значение в переменную один раз — и дальше используем имя во всей программе."
+        title="Переменные и стиль кода"
+        duration="20 минут"
+        lead="Переменная — это имя, под которым мы храним значение. Записываем значение в переменную один раз — и дальше используем имя во всей программе. Здесь же разберём два «профессиональных» вопроса: как правильно давать имена и что такое PEP."
       />
 
       <div className="space-y-5">
@@ -311,6 +388,88 @@ export function SectionThree() {
           </p>
         </Callout>
 
+        {/* Идентификаторы */}
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:p-6">
+          <h3 className="mb-1 flex items-center gap-2 text-[15.5px] font-bold text-stone-900">
+            <ShieldCheck className="h-4 w-4 text-amber-500" />
+            Идентификаторы: правила имён переменных
+          </h3>
+          <p className="text-[14px] leading-relaxed text-stone-600">
+            Имя переменной в программировании называют <b>идентификатором</b>. Python
+            разрешает не любые имена — есть пять правил, и на экзамене за их нарушение даётся
+            ошибка SyntaxError:
+          </p>
+          <ol className="mt-3 grid gap-2 text-[14px] text-stone-700 sm:grid-cols-2">
+            {[
+              "Только латинские буквы, цифры и знак подчёркивания _",
+              "Имя не может начинаться с цифры",
+              "Пробелы и дефисы запрещены (нужен символ _)",
+              "Заглавные и строчные буквы различаются: age и Age — разные переменные",
+              "Нельзя использовать ключевые слова языка: if, else, for, while…",
+            ].map((t, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded bg-stone-900 text-[11px] font-bold text-amber-300">
+                  {i + 1}
+                </span>
+                {t}
+              </li>
+            ))}
+          </ol>
+          <div className="mt-4 overflow-x-auto thin-scroll">
+            <table className="w-full min-w-[420px] text-left text-[13.5px]">
+              <thead>
+                <tr className="border-b border-stone-200 bg-stone-50 text-[12px] uppercase tracking-wide text-stone-500">
+                  <th className="px-4 py-2.5 font-semibold">Пример имени</th>
+                  <th className="px-4 py-2.5 font-semibold">Можно?</th>
+                  <th className="px-4 py-2.5 font-semibold">Почему</th>
+                </tr>
+              </thead>
+              <tbody className="font-mono text-stone-700">
+                {[
+                  ["user_name", "да", "буквы и подчёркивание"],
+                  ["_count", "да", "подчёркивание в начале разрешено"],
+                  ["age16", "да", "цифры после букв"],
+                  ["16age", "нет", "начинается с цифры"],
+                  ["my-var", "нет", "дефис Python считает минусом"],
+                  ["my var", "нет", "пробел недопустим"],
+                  ["for", "нет", "ключевое слово языка"],
+                ].map(([name, ok, why]) => (
+                  <tr key={name} className="border-b border-stone-100 last:border-0">
+                    <td className="px-4 py-2">{name}</td>
+                    <td className={`px-4 py-2 font-bold ${ok === "да" ? "text-emerald-700" : "text-red-600"}`}>{ok}</td>
+                    <td className="px-4 py-2 font-sans text-stone-500">{why}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-[13px] leading-relaxed text-stone-500">
+            Нюанс: формально Python 3 разрешает буквы других алфавитов, но так не делают —
+            настоящий код пишут латиницей. Имя <code className="font-mono">print</code> — не
+            ключевое слово, а имя встроенной функции: переменная с таким именем создастся, но
+            сломает печать — лучше не надо.
+          </p>
+          <div className="mt-4">
+            <p className="mb-3 text-[14px] font-semibold text-stone-800">
+              Эксперимент: раскомментируйте любую строку — и Python откажется создавать такую
+              переменную:
+            </p>
+            <PythonPlayground
+              initialCode={`age = 16
+Age = 21          # другое имя! регистр важен
+print(age, Age)
+
+# 2name = 5       # нельзя: начинается с цифры
+# my-var = 5      # нельзя: дефис — это минус
+# my var = 5      # нельзя: пробел
+# for = 7         # нельзя: ключевое слово
+`}
+              fileName="имена.py"
+              syncId="s3-ident"
+            />
+          </div>
+        </div>
+
         <div className="grid gap-5 xl:grid-cols-2">
           <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:p-6">
             <h3 className="mb-1 text-[15.5px] font-bold text-stone-900">Упражнение 1</h3>
@@ -329,6 +488,201 @@ export function SectionThree() {
             <PythonPlayground initialCode={VARIABLES_STARTER_2} fileName="упражнение-2.py" syncId="s3-var2" />
           </div>
         </div>
+
+        {/* PEP и стиль кода */}
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:p-6">
+          <h3 className="mb-1 flex items-center gap-2 text-[15.5px] font-bold text-stone-900">
+            <BookMarked className="h-4 w-4 text-amber-500" />
+            Что такое PEP и почему код должен быть красивым
+          </h3>
+          <p className="text-[14px] leading-relaxed text-stone-600">
+            <b>PEP</b> (Python Enhancement Proposal — «предложение по развитию Python») — это
+            официальные документы, в которых сообщество Python описывает новые возможности
+            языка и правила работы с ним. Главный документ для новичка — <b>PEP 8</b>:
+            стандарт оформления кода. Программы читают не только компьютеры, но и люди —
+            одноклассник, учитель, коллега. Единый стиль делает код понятным для всех.
+          </p>
+          <div className="mt-4 overflow-x-auto thin-scroll">
+            <table className="w-full min-w-[520px] text-left text-[13.5px]">
+              <thead>
+                <tr className="border-b border-stone-200 bg-stone-50 text-[12px] uppercase tracking-wide text-stone-500">
+                  <th className="px-4 py-2.5 font-semibold">Правило PEP 8</th>
+                  <th className="px-4 py-2.5 font-semibold">Плохо</th>
+                  <th className="px-4 py-2.5 font-semibold">Хорошо</th>
+                </tr>
+              </thead>
+              <tbody className="text-stone-700">
+                {[
+                  ["Отступ — 4 пробела, не табуляция", "if x>1:\n  print(x)", "if x > 1:\n    print(x)"],
+                  ["Имена переменных — строчными, через _ (snake_case)", "UserName, username2day", "user_name, items_count"],
+                  ["Пробелы вокруг операторов = + - * /", "x=10;  a+b", "x = 10;  a + b"],
+                  ["Пробел после запятой", "print(a,b)", "print(a, b)"],
+                  ["Пробел после решётки в комментариях", "#комментарий", "# комментарий"],
+                  ["Не растягивайте строки — короче 79 символов", "длинная строка на 120 символов", "перенесите на новую строку"],
+                ].map(([rule, bad, good]) => (
+                  <tr key={rule} className="border-b border-stone-100 last:border-0">
+                    <td className="px-4 py-2.5 font-medium text-stone-800">{rule}</td>
+                    <td className="px-4 py-2.5 font-mono text-[12.5px] text-red-600">{bad}</td>
+                    <td className="px-4 py-2.5 font-mono text-[12.5px] text-emerald-700">{good}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <CodeBlock
+              code={"x=10\nprint( x *2 )\nUserName=\"Ivan\""}
+              title="Так не пишут"
+            />
+            <CodeBlock
+              code={"x = 10\nprint(x * 2)\nuser_name = \"Ivan\""}
+              title="Так пишут по PEP 8"
+            />
+          </div>
+          <Callout icon={<Lightbulb className="h-4 w-4" />} title="Совет">
+            <p>
+              Следить за стилем вручную необязательно: есть программы-линтеры (flake8) и
+              автоформаттеры (black), которые проверяют и исправляют оформление сами. Но
+              правила из таблицы стоит помнить — на экзамене и в жизни читабельный код ценится.
+            </p>
+          </Callout>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function SectionStrings() {
+  return (
+    <section className="scroll-mt-20" aria-label="Раздел 4">
+      <SectionHeading
+        num={4}
+        id="s3b"
+        title="Строки: конкатенация и str()"
+        duration="12 минут"
+        lead="Текст в Python называется строкой, и со строками есть свои операции: их можно склеивать, повторять и превращать числа в текст. Это понадобится и для красивого вывода, и для задач экзамена."
+      />
+
+      <div className="space-y-5">
+        <CodeBlock
+          code={'first = "Иван"\nlast = "Петров"\n\nprint(first + " " + last)'}
+          output={"Иван Петров"}
+          title="Конкатенация — склейка строк через +"
+        />
+
+        <Callout icon={<Lightbulb className="h-4 w-4" />} title="Как это работает">
+          <p>
+            Операция <code className="rounded bg-stone-200/70 px-1.5 py-0.5 font-mono text-[13px]">+</code> для
+            строк означает «приклей одну строку к другой — без пробелов и без всего лишнего».
+            Поэтому пробел приходится ставить самому:{" "}
+            <code className="font-mono">first + &quot; &quot; + last</code> — средняя строка в
+            кавычках и есть этот один пробел. А звёздочка повторяет строку:{" "}
+            <code className="font-mono">&quot;ха&quot; * 3</code> →{" "}
+            <code className="font-mono">хахаха</code>,{" "}
+            <code className="font-mono">&quot;-&quot; * 20</code> — линия из 20 дефисов.
+          </p>
+        </Callout>
+
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:p-6">
+          <h3 className="mb-1 text-[15.5px] font-bold text-stone-900">
+            Попробуйте: склейка и повтор
+          </h3>
+          <p className="mb-4 text-[14px] leading-relaxed text-stone-600">
+            Запустите код, затем измените строки и числа. Посмотрите, что будет, если убрать
+            пробел между словами.
+          </p>
+          <PythonPlayground
+            initialCode={'name = "Анна"\n\ngreeting = "Привет, " + name\nprint(greeting)\n\nprint("-" * 20)\nprint("ха" * 3)'}
+            fileName="склейка.py"
+            syncId="s4-str-1"
+          />
+        </div>
+
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:p-6">
+          <h3 className="mb-1 text-[15.5px] font-bold text-stone-900">
+            Ловушка: строка + число = ошибка
+          </h3>
+          <p className="mb-4 text-[14px] leading-relaxed text-stone-600">
+            Склеить можно только строку со строкой. Раскомментируйте вторую строку — Python
+            остановится с ошибкой TypeError: нельзя складывать текст и число.
+          </p>
+          <PythonPlayground
+            initialCode={'age = 17\n\nprint("Мне " + str(age) + " лет")\n# print("Мне " + age + " лет")  ← уберите решётку и запустите'}
+            fileName="ошибка-типов.py"
+            syncId="s4-str-2"
+          />
+        </div>
+
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:p-6">
+          <h3 className="mb-1 flex items-center gap-2 text-[15.5px] font-bold text-stone-900">
+            <Type className="h-4 w-4 text-amber-500" />
+            str() и другие функции преобразования
+          </h3>
+          <p className="text-[14px] leading-relaxed text-stone-600">
+            Функция <code className="rounded bg-amber-100 px-2 py-0.5 font-mono text-[13px] font-bold">str()</code>{" "}
+            превращает число в строку — и тогда склейка работает. Это зеркало функций{" "}
+            <code className="font-mono">int()</code> и <code className="font-mono">float()</code>, которые
+            вы уже знаете:
+          </p>
+          <div className="mt-3 overflow-x-auto thin-scroll">
+            <table className="w-full min-w-[460px] text-left text-[13.5px]">
+              <thead>
+                <tr className="border-b border-stone-200 bg-stone-50 text-[12px] uppercase tracking-wide text-stone-500">
+                  <th className="px-4 py-2.5 font-semibold">Функция</th>
+                  <th className="px-4 py-2.5 font-semibold">Что делает</th>
+                  <th className="px-4 py-2.5 font-semibold">Пример</th>
+                  <th className="px-4 py-2.5 font-semibold">Результат</th>
+                </tr>
+              </thead>
+              <tbody className="text-stone-700">
+                <tr className="border-b border-stone-100">
+                  <td className="px-4 py-2.5 font-mono font-bold">str()</td>
+                  <td className="px-4 py-2.5">число → строка</td>
+                  <td className="px-4 py-2.5 font-mono">str(25)</td>
+                  <td className="px-4 py-2.5 font-mono">&quot;25&quot;</td>
+                </tr>
+                <tr className="border-b border-stone-100">
+                  <td className="px-4 py-2.5 font-mono font-bold">int()</td>
+                  <td className="px-4 py-2.5">строка → целое число</td>
+                  <td className="px-4 py-2.5 font-mono">int(&quot;25&quot;)</td>
+                  <td className="px-4 py-2.5 font-mono">25</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-2.5 font-mono font-bold">float()</td>
+                  <td className="px-4 py-2.5">строка → дробное число</td>
+                  <td className="px-4 py-2.5 font-mono">float(&quot;3.14&quot;)</td>
+                  <td className="px-4 py-2.5 font-mono">3.14</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4">
+            <PythonPlayground
+              initialCode={'price = 25\ncount = 3\n\ntotal = price * count\nprint("Итого: " + str(total) + " руб.")\nprint("На человека:", total / count)'}
+              fileName="str-в-деле.py"
+              syncId="s4-str-3"
+            />
+          </div>
+          <Callout icon={<Lightbulb className="h-4 w-4" />} title="Запятая или плюс?">
+            <p>
+              В <code className="font-mono">print()</code> можно перечислять через запятую — она
+              сама ставит пробелы и не требует str(). Конкатенация нужна, когда вы{" "}
+              <b>собираете одну готовую строку</b>: сохранить в переменную, передать дальше,
+              получить ровно нужный формат. На экзамене чаще всего используют запятую — она
+              короче и безопаснее.
+            </p>
+          </Callout>
+        </div>
+
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:p-6">
+          <h3 className="mb-1 text-[15.5px] font-bold text-stone-900">
+            Задачи по строкам — с автопроверкой
+          </h3>
+          <p className="mb-4 text-[14px] leading-relaxed text-stone-600">
+            Три задачи на склейку, повтор и str(). Напишите решение и нажмите «Проверить».
+          </p>
+          <TaskTabs tasks={STRING_TASKS} withSolution stdinHint="Каждая строка поля ввода — один input()." />
+        </div>
       </div>
     </section>
   );
@@ -336,9 +690,9 @@ export function SectionThree() {
 
 export function SectionFour() {
   return (
-    <section className="scroll-mt-20" aria-label="Раздел 4">
+    <section className="scroll-mt-20" aria-label="Раздел 5">
       <SectionHeading
-        num={4}
+        num={5}
         id="s4"
         title="Ввод данных"
         duration="20 минут"
@@ -398,12 +752,12 @@ export function SectionFour() {
 
 export function SectionFive() {
   return (
-    <section className="scroll-mt-20" aria-label="Раздел 5">
+    <section className="scroll-mt-20" aria-label="Раздел 6">
       <SectionHeading
-        num={5}
+        num={6}
         id="s5"
         title="Почему возникают ошибки с числами"
-        lead="Самая частая ловушка новичка: input() всегда возвращает текст — даже если пользователь ввёл цифры. Проверим, что при этом происходит."
+        lead="Самая частая ловушка новичка: input() всегда возвращает текст — даже если пользователь ввёл цифры. Вы уже знаете из раздела 4, что для строк + означает склейку. Проверим, что при этом происходит."
       />
 
       <div className="space-y-5">

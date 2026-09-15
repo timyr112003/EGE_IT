@@ -14,6 +14,7 @@ import {
   HOMEWORK_BLOCKS_L2,
   HOMEWORK_HINT_L2,
   HOMEWORK_FILE_NAME_L2,
+  HOMEWORK_ANSWERS_FILE_NAME_L2,
 } from "@/lib/lesson/homework-data2";
 import { Lightbulb, AlertTriangle, GraduationCap, Terminal } from "lucide-react";
 import type { LessonTask } from "@/lib/lesson/tasks";
@@ -89,7 +90,7 @@ export default function Lesson2Page() {
               <p>
                 Что делает <code>print()</code>? Для чего нужен <code>input()</code>? Почему
                 пишем <code>int(input())</code>, а не просто <code>input()</code>? Что означает{" "}
-                <code>%</code> и <code>//</code>? Что такое переменная? Если какой-то из ответов
+                <code>%</code> и <code>{"//"}</code>? Что такое переменная? Если какой-то из ответов
                 вызывает сомнения —{" "}
                 <a href="/" className="font-medium text-blue-700 underline">
                   вернитесь к уроку 1
@@ -351,8 +352,12 @@ export default function Lesson2Page() {
 
         {/* Домашнее задание */}
         <Homework
+          num={10}
           blocks={HOMEWORK_BLOCKS_L2}
-          lead="Три блока — от базовых проверок к задаче на мышление. Решайте в любой среде или прямо здесь: у задач из разделов 8–9 есть автопроверка."
+          lesson={2}
+          prefix="hw2"
+          answersFileName={HOMEWORK_ANSWERS_FILE_NAME_L2}
+          lead="Три блока — от базовых проверок к задаче на мышление. Решайте прямо здесь: у каждой задачи есть редактор Python, код сохраняется на странице, а готовую работу можно отправить учителю."
           calloutTitle="Подсказка к палиндрому"
           calloutText={
             <p>
@@ -389,6 +394,10 @@ export default function Lesson2Page() {
           </p>
           <p className="mt-1">
             Код выполняется прямо в браузере (Pyodide / WebAssembly). Прогресс хранится локально.
+            {" "}
+            <a href="/uchitelyu" className="text-stone-500 underline">
+              Кабинет учителя
+            </a>
           </p>
         </footer>
       </main>

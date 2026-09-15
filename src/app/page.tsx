@@ -4,6 +4,7 @@ import {
   SectionOne,
   SectionTwo,
   SectionThree,
+  SectionStrings,
   SectionFour,
   SectionFive,
 } from "@/components/lesson/sections";
@@ -23,13 +24,14 @@ export default function LessonPage() {
           <SectionOne />
           <SectionTwo />
           <SectionThree />
+          <SectionStrings />
           <SectionFour />
           <SectionFive />
 
-          {/* Раздел 6: задачи в стиле ЕГЭ */}
-          <section className="scroll-mt-20" aria-label="Раздел 6">
+          {/* Раздел 7: задачи в стиле ЕГЭ */}
+          <section className="scroll-mt-20" aria-label="Раздел 7">
             <SectionHeading
-              num={6}
+              num={7}
               id="s6"
               title="Первая задача в стиле ЕГЭ"
               lead="Четыре классические задачи формата ЕГЭ. Напишите решение в редакторе и нажмите «Проверить» — программа сама прогонит ваш код на нескольких тестах: входных и ожидаемых выходных данных. Решение доступно в спойлере, но сначала попробуйте сами."
@@ -37,10 +39,10 @@ export default function LessonPage() {
             <TaskTabs tasks={EXAM_TASKS} withSolution stdinHint="Для задач с двумя числами нужны две строки ввода." />
           </section>
 
-          {/* Раздел 7: самостоятельная работа */}
-          <section className="scroll-mt-20" aria-label="Раздел 7">
+          {/* Раздел 8: самостоятельная работа */}
+          <section className="scroll-mt-20" aria-label="Раздел 8">
             <SectionHeading
-              num={7}
+              num={8}
               id="s7"
               title="Самостоятельная работа"
               duration="10 минут"
@@ -67,6 +69,10 @@ export default function LessonPage() {
             Код выполняется в браузере: Pyodide + WebAssembly ·{" "}
             <a href="/urok-2" className="font-semibold text-blue-700 underline">
               Урок 2: Условия и логика →
+            </a>
+            {" · "}
+            <a href="/uchitelyu" className="text-stone-500 underline">
+              Кабинет учителя
             </a>
           </p>
         </div>

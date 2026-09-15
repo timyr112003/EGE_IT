@@ -13,7 +13,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 
-export const TOTAL_CHECKED_TASKS = 9; // урок 1: 4 задачи ЕГЭ + 5 самостоятельных
+export const TOTAL_CHECKED_TASKS = 12; // урок 1: 3 задачи-строки + 4 задачи ЕГЭ + 5 самостоятельных
 export const TOTAL_CHECKED_TASKS_L2 = 9; // урок 2: 3 задачи ЕГЭ + 6 самостоятельных
 
 const KEY_L1 = "python-lesson-1-progress";
@@ -82,6 +82,21 @@ function makeSubscribe(st: ProgressStore) {
   };
 }
 
+/** Загрузка сохранённого списка по ключу (без ссылки на объект стора из хука). */
+function loadByKey(storageKey: string): string[] {
+  const st = stores.get(storageKey);
+  return st ? load(st) : EMPTY;
+}
+
+/** Влить загруженный прогресс в стор, найденный по ключу. */
+function restoreStore(storageKey: string, stored: string[]) {
+  const st = stores.get(storageKey);
+  if (!st) return;
+  st.solved = stored;
+  persist(st);
+  emit(st);
+}
+
 export function useLessonProgress(storageKey: string = KEY_L1): { solved: string[]; count: number } {
   const st = getStore(storageKey);
   const subscribe = makeSubscribe(st);
@@ -93,13 +108,11 @@ export function useLessonProgress(storageKey: string = KEY_L1): { solved: string
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     // Загружаем сохранённый прогресс только после гидрации
-    const stored = load(st);
+    const stored = loadByKey(storageKey);
     if (stored.length > 0) {
-      st.solved = stored;
-      emit(st);
+      restoreStore(storageKey, stored);
     }
     setMounted(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [storageKey]);
   return mounted ? { solved: list, count: list.length } : { solved: EMPTY, count: 0 };
 }

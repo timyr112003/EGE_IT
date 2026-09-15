@@ -27,7 +27,7 @@ import { pyRunner, usePyStatus, type PyStatus } from "@/lib/py-runner/runner";
 import { explainError, errorSummary, type ErrorExplanation } from "@/lib/py-runner/error-hints";
 import { markSolved } from "@/lib/lesson/progress";
 import { useCollab } from "@/lib/collab/store";
-import { EXAM_TASKS, SELF_TASKS } from "@/lib/lesson/tasks";
+import { EXAM_TASKS, SELF_TASKS, STRING_TASKS } from "@/lib/lesson/tasks";
 import { EXAM_TASKS_L2, SELF_TASKS_L2 } from "@/lib/lesson/tasks2";
 import { UserRoundPen } from "lucide-react";
 
@@ -70,6 +70,10 @@ interface PythonPlaygroundProps {
   fileName?: string;
   /** id для синхронизации кода между участниками (по умолчанию — из taskId) */
   syncId?: string;
+  /** Ключ localStorage для автосохранения кода и ввода (ДЗ) */
+  persistKey?: string;
+  /** Сообщать наружу текущий код/ввод (реестр сдачи ДЗ) */
+  onStateChange?: (code: string, stdin: string) => void;
 }
 
 function normalizeOutput(s: string): string {
@@ -104,6 +108,8 @@ export function PythonPlayground({
   stdinHint,
   fileName = "main.py",
   syncId,
+  persistKey,
+  onStateChange,
 }: PythonPlaygroundProps) {
   const [code, setCode] = useState(initialCode);
   const [stdin, setStdin] = useState(initialStdin);
@@ -114,6 +120,48 @@ export function PythonPlayground({
   const [results, setResults] = useState<TestResult[] | null>(null);
   const [checking, setChecking] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [restored, setRestored] = useState(false);
+
+  // Восстановление сохранённого кода ДЗ из localStorage (после гидрации)
+  useEffect(() => {
+    if (!persistKey) {
+      setRestored(true);
+      return;
+    }
+    try {
+      const c = window.localStorage.getItem(`${persistKey}:code`);
+      const s = window.localStorage.getItem(`${persistKey}:stdin`);
+      if (c != null) setCode(c);
+      if (s != null) setStdin(s);
+    } catch {
+      /* приватный режим */
+    }
+    setRestored(true);
+  }, [persistKey]);
+
+  // Автосохранение кода/ввода (с задержкой на печать)
+  useEffect(() => {
+    if (!persistKey || !restored) return;
+    const t = setTimeout(() => {
+      try {
+        window.localStorage.setItem(`${persistKey}:code`, code);
+        window.localStorage.setItem(`${persistKey}:stdin`, stdin);
+      } catch {
+        /* приватный режим */
+      }
+    }, 500);
+    return () => clearTimeout(t);
+  }, [code, stdin, persistKey, restored]);
+
+  // Сообщаем наружу код/ввод (реестр сдачи ДЗ)
+  const onStateChangeRef = useRef(onStateChange);
+  useEffect(() => {
+    onStateChangeRef.current = onStateChange;
+  });
+  useEffect(() => {
+    if (!restored) return;
+    onStateChangeRef.current?.(code, stdin);
+  }, [code, stdin, restored]);
 
   // Совместная работа: синхронизация кода этого редактора между участниками
   const collabSyncId = syncId ?? (taskId ? `task-${taskId}` : null);
@@ -264,9 +312,13 @@ export function PythonPlayground({
     setChecking(false);
     if (taskId && collected.every((r) => r.ok)) {
       markSolved(taskId);
-      const task = [...EXAM_TASKS, ...SELF_TASKS, ...EXAM_TASKS_L2, ...SELF_TASKS_L2].find(
-        (t) => t.id === taskId,
-      );
+      const task = [
+        ...EXAM_TASKS,
+        ...SELF_TASKS,
+        ...STRING_TASKS,
+        ...EXAM_TASKS_L2,
+        ...SELF_TASKS_L2,
+      ].find((t) => t.id === taskId);
       if (task) useCollab.getState().notifySolved(taskId, task.shortTitle);
     }
   }, [tests, busy, code, taskId]);

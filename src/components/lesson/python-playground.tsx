@@ -28,6 +28,7 @@ import { explainError, errorSummary, type ErrorExplanation } from "@/lib/py-runn
 import { markSolved } from "@/lib/lesson/progress";
 import { useCollab } from "@/lib/collab/store";
 import { EXAM_TASKS, SELF_TASKS } from "@/lib/lesson/tasks";
+import { EXAM_TASKS_L2, SELF_TASKS_L2 } from "@/lib/lesson/tasks2";
 import { UserRoundPen } from "lucide-react";
 
 const CodeMirror = dynamic(() => import("@uiw/react-codemirror"), {
@@ -263,7 +264,9 @@ export function PythonPlayground({
     setChecking(false);
     if (taskId && collected.every((r) => r.ok)) {
       markSolved(taskId);
-      const task = [...EXAM_TASKS, ...SELF_TASKS].find((t) => t.id === taskId);
+      const task = [...EXAM_TASKS, ...SELF_TASKS, ...EXAM_TASKS_L2, ...SELF_TASKS_L2].find(
+        (t) => t.id === taskId,
+      );
       if (task) useCollab.getState().notifySolved(taskId, task.shortTitle);
     }
   }, [tests, busy, code, taskId]);

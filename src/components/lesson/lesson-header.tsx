@@ -3,18 +3,30 @@
 import { useEffect, useState } from "react";
 import { Terminal, ListChecks } from "lucide-react";
 import { useLessonProgress, TOTAL_CHECKED_TASKS } from "@/lib/lesson/progress";
-import { NAV } from "@/lib/lesson/nav";
+import { NAV, type NavItem } from "@/lib/lesson/nav";
 import { useCollab } from "@/lib/collab/store";
 import { CollabButton } from "./collab/collab-button";
 
-export function LessonHeader() {
-  const { count } = useLessonProgress();
+interface LessonHeaderProps {
+  nav?: NavItem[];
+  brand?: string;
+  progressKey?: string;
+  progressTotal?: number;
+}
+
+export function LessonHeader({
+  nav = NAV,
+  brand = "Python · Урок 1",
+  progressKey = "python-lesson-1-progress",
+  progressTotal = TOTAL_CHECKED_TASKS,
+}: LessonHeaderProps) {
+  const { count } = useLessonProgress(progressKey);
   const [activeSection, setActiveSection] = useState<string>("");
   const leading = useCollab((s) => s.leading);
   const reportSection = useCollab((s) => s.reportSection);
 
   useEffect(() => {
-    const sections = NAV.map((n) => document.getElementById(n.id)).filter(Boolean);
+    const sections = nav.map((n) => document.getElementById(n.id)).filter(Boolean);
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -32,7 +44,7 @@ export function LessonHeader() {
     if (activeSection) reportSection(activeSection);
   }, [activeSection, leading, reportSection]);
 
-  const pct = Math.round((count / TOTAL_CHECKED_TASKS) * 100);
+  const pct = Math.round((count / progressTotal) * 100);
 
   return (
     <header className="sticky top-0 z-50 border-b border-stone-200/80 bg-[#f8f7f4]/90 backdrop-blur-md">
@@ -42,13 +54,13 @@ export function LessonHeader() {
             <Terminal className="h-4 w-4 text-amber-300" />
           </span>
           <span className="hidden flex-col leading-tight sm:flex">
-            <span className="text-[13.5px] font-bold text-stone-900">Python · Урок 1</span>
+            <span className="text-[13.5px] font-bold text-stone-900">{brand}</span>
             <span className="text-[11px] text-stone-500">Подготовка к ЕГЭ</span>
           </span>
         </a>
 
         <nav className="thin-scroll ml-2 hidden flex-1 items-center gap-1 overflow-x-auto lg:flex" aria-label="Разделы урока">
-          {NAV.map((n) => (
+          {nav.map((n) => (
             <a
               key={n.id}
               href={`#${n.id}`}
@@ -68,7 +80,7 @@ export function LessonHeader() {
           <ListChecks className="h-4 w-4 hidden text-stone-500 sm:block" />
           <div className="flex flex-col items-end gap-1">
             <span className="text-[11.5px] font-medium text-stone-600">
-              Задачи с проверкой: {count} / {TOTAL_CHECKED_TASKS}
+              Задачи с проверкой: {count} / {progressTotal}
             </span>
             <div className="h-1.5 w-28 overflow-hidden rounded-full bg-stone-200">
               <div

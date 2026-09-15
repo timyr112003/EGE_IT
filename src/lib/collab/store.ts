@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { io, type Socket } from "socket.io-client";
 import { toast } from "@/hooks/use-toast";
 import { NAV } from "@/lib/lesson/nav";
+import { NAV2 } from "@/lib/lesson/nav2";
 
 /* ---------- Типы ---------- */
 
@@ -82,11 +83,15 @@ export function getRoomFromUrl(): string {
   if (typeof window === "undefined") return "urok-1";
   const r = new URLSearchParams(window.location.search).get("room");
   const safe = r?.replace(/[^\wа-яА-ЯёЁ-]/g, "").slice(0, 40).trim();
-  return safe || "urok-1";
+  if (safe) return safe;
+  // Комната по умолчанию задаётся страницей урока (data-lesson-room на <body>)
+  return document.body?.dataset?.lessonRoom || "urok-1";
 }
 
 function sectionLabel(id: string): string {
-  return NAV.find((n) => n.id === id)?.label ?? "раздел урока";
+  // На страницах урока 2 подписи разделов берём из NAV2
+  const nav = document.body?.dataset?.lesson === "2" ? NAV2 : NAV;
+  return nav.find((n) => n.id === id)?.label ?? "раздел урока";
 }
 
 /* ---------- Store ---------- */
@@ -224,15 +229,34 @@ function ensureSocket(
   if (typeof window === "undefined") return null;
   if (socket) return socket;
 
-  socket = io("https://vigilant-abundance-production-6403.up.railway.app", {
-    path: "/socket.io/",
-    transports: ["websocket", "polling"],
-    forceNew: true,
-    reconnection: true,
-    reconnectionAttempts: 20,
-    reconnectionDelay: 1500,
-    timeout: 10000,
-  });
+  /*
+   * Адрес коллаб-сервиса:
+   * — по умолчанию (VPS-вариант с Caddy): путь «/» с query XTransformPort=3003,
+   *   Caddy проксирует на локальный collab-сервис;
+   * — если задан NEXT_PUBLIC_COLLAB_URL (например, отдельный Railway-сервис),
+   *   подключаемся напрямую по path /socket.io/.
+   */
+  const external = (process.env.NEXT_PUBLIC_COLLAB_URL || "").trim().replace(/\/+$/, "");
+
+  socket = external
+    ? io(external, {
+        path: "/socket.io/",
+        transports: ["websocket", "polling"],
+        forceNew: true,
+        reconnection: true,
+        reconnectionAttempts: 20,
+        reconnectionDelay: 1500,
+        timeout: 10000,
+      })
+    : io("/?XTransformPort=3003", {
+        path: "/",
+        transports: ["websocket", "polling"],
+        forceNew: true,
+        reconnection: true,
+        reconnectionAttempts: 20,
+        reconnectionDelay: 1500,
+        timeout: 10000,
+      });
 
   socket.on("connect", () => {
     set({ connected: true });

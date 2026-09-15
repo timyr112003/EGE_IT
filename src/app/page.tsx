@@ -63,7 +63,12 @@ export default function LessonPage() {
             <span className="font-semibold text-stone-700">Python · Урок 1</span> —
             знакомство с программированием, подготовка к ЕГЭ по информатике
           </p>
-          <p>Код выполняется в браузере: Pyodide + WebAssembly</p>
+          <p>
+            Код выполняется в браузере: Pyodide + WebAssembly ·{" "}
+            <a href="/urok-2" className="font-semibold text-blue-700 underline">
+              Урок 2: Условия и логика →
+            </a>
+          </p>
         </div>
       </footer>
     </div>

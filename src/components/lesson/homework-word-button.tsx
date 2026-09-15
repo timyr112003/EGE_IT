@@ -13,7 +13,16 @@ import {
   HOMEWORK_BLOCKS,
   HOMEWORK_HINT,
   HOMEWORK_FILE_NAME,
+  type HomeworkBlock,
 } from "@/lib/lesson/homework-data";
+
+interface HomeworkWordButtonProps {
+  blocks?: HomeworkBlock[];
+  hint?: string;
+  fileName?: string;
+  /** Подзаголовок под шапкой документа */
+  subtitle?: string;
+}
 
 /*
  * Кнопка «Скачать ДЗ (Word)» — собирает настоящий .docx
@@ -42,7 +51,12 @@ function para(children: TextRun[], opts?: { center?: boolean; before?: number; a
   });
 }
 
-export function HomeworkWordButton() {
+export function HomeworkWordButton({
+  blocks = HOMEWORK_BLOCKS,
+  hint = HOMEWORK_HINT,
+  fileName = HOMEWORK_FILE_NAME,
+  subtitle = "Python — Урок 1 · Подготовка к ЕГЭ по информатике",
+}: HomeworkWordButtonProps) {
   const [busy, setBusy] = useState(false);
 
   const download = async () => {
@@ -52,7 +66,7 @@ export function HomeworkWordButton() {
       const children: Paragraph[] = [
         para([tr("Домашнее задание", { bold: true, size: 36 })], { center: true, after: 60 }),
         para(
-          [tr("Python — Урок 1 · Подготовка к ЕГЭ по информатике", { size: 24, color: "555555" })],
+          [tr(subtitle, { size: 24, color: "555555" })],
           { center: true, after: 240 }
         ),
         para([
@@ -62,7 +76,7 @@ export function HomeworkWordButton() {
         ], { after: 240 }),
       ];
 
-      HOMEWORK_BLOCKS.forEach((block, bi) => {
+      blocks.forEach((block, bi) => {
         children.push(
           para([tr(block.title, { bold: true, size: 28 })], { before: 200, after: 120 })
         );
@@ -86,7 +100,7 @@ export function HomeworkWordButton() {
           ],
           { before: 240, after: 60 }
         ),
-        para([tr("Подсказка: " + HOMEWORK_HINT, { italics: true, size: 24, color: "555555" })], {
+        para([tr("Подсказка: " + hint, { italics: true, size: 24, color: "555555" })], {
           after: 60,
         }),
         para([tr("Разбор решений и типичных ошибок — на следующем занятии.", { italics: true, size: 24, color: "555555" })], { after: 0 })
@@ -110,7 +124,7 @@ export function HomeworkWordButton() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = HOMEWORK_FILE_NAME;
+      a.download = fileName;
       document.body.appendChild(a);
       a.click();
       setTimeout(() => {

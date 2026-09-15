@@ -238,25 +238,15 @@ function ensureSocket(
    */
   const external = (process.env.NEXT_PUBLIC_COLLAB_URL || "").trim().replace(/\/+$/, "");
 
-  socket = external
-    ? io(external, {
-        path: "/socket.io/",
-        transports: ["websocket", "polling"],
-        forceNew: true,
-        reconnection: true,
-        reconnectionAttempts: 20,
-        reconnectionDelay: 1500,
-        timeout: 10000,
-      })
-    : io("/?XTransformPort=3003", {
-        path: "/",
-        transports: ["websocket", "polling"],
-        forceNew: true,
-        reconnection: true,
-        reconnectionAttempts: 20,
-        reconnectionDelay: 1500,
-        timeout: 10000,
-      });
+ socket = io("https://vigilant-abundance-production-6403.up.railway.app", {
+  path: "/socket.io/",
+  transports: ["websocket", "polling"],
+  forceNew: true,
+  reconnection: true,
+  reconnectionAttempts: 20,
+  reconnectionDelay: 1500,
+  timeout: 10000,
+});
 
   socket.on("connect", () => {
     set({ connected: true });
